@@ -1,6 +1,8 @@
 <p id="notice"><%= notice %></p>
 
 <h1>Face Detections</h1>
+<script src="./js/application.js"></script>
+<link rel="stylesheet" href="./css/application.css">
 
 <table>
   <thead>
@@ -10,6 +12,8 @@
   </thead>
 
   <tbody>
+  <video id="target" width="800" height="600" autoplay></video>
+
     <% @face_detections.each do |face_detection| %>
       <tr>
         <td><%= link_to 'Show', face_detection %></td>
