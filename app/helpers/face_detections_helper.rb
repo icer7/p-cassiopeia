@@ -1,0 +1,2 @@
+module FaceDetectionsHelper
+end
