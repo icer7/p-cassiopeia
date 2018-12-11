@@ -1,8 +1,9 @@
 <p id="notice"><%= notice %></p>
 
-<h1>Face Detections</h1>
+<h1>cassiopeia</h1>
 
 <table>
+
   <thead>
     <tr>
       <th colspan="3"></th>
@@ -10,9 +11,19 @@
   </thead>
 
   <tbody>
-    <video id="target" width="600" height="400" autoplay></video>
-    <canvas id="result" width="600" height="400"></canvas>
+    <button onclick="startVideo()">ビデオ開始</button>
+    <button onclick="stopVideo()">ビデオ終了</button>
+    <button onclick="snapshot()">写真撮影</button>
+    <button onclick="reset()">写真削除</button>
+
+    <h2>ビデオ撮影</h2>
+    <video autoplay width="320" height="240"></video>
+
+    <h2>写真撮影</h2>
+    <img/>
+    <canvas style="display: none" width="320" height="240"></canvas>
   </tbody>
+
 </table>
 
 <br>

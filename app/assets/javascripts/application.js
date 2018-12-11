@@ -10,28 +10,52 @@
 // Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require_tree ../../../vendor/assets/javascripts/.
 //= require rails-ujs
 //= require activestorage
 //= require turbolinks
 //= require_tree .
-window.addEventListener("load", () => {
-  let deviceNavigator = navigator.mediaDevices.getUserMedia({ audio: false, video: true });
-  deviceNavigator.then((s) => {
-    let target = document.getElementById("target");
-    let ctracker = new clm.tracker();
-    let result = document.getElementById("result");
-    let context = result.getContext("2d");
-    let update = () => {
-      requestAnimationFrame(update);
-      context.clearRect(0, 0, result.width, result.height);
-      context.drawImage(target, 0, 0, result.width, result.height);
-      ctracker.draw(result);
-    };
-    target.src = window.URL.createObjectURL(s);
-    ctracker.init(pModel);
-    ctracker.start(target);
-    update();
-  });
-});
+// window.addEventListener("load", () => {
+//   let deviceNavigator = navigator.mediaDevices.getUserMedia({ audio: false, video: true });
+//   deviceNavigator.then((s) => {
+//     let input = document.getElementById("input");
+//     let canvas = document.getElementById("canvas");
+//     let context = canvas.getContext("2d");
+//     input.src = window.URL.createObjectURL(s);
+//   });
+// });
+function startVideo() {
+  Promise.resolve()
+    .then(function () {
+      return navigator.mediaDevices.enumerateDevices();
+    })
+    .then(function (mediaDeviceInfoList) {
+      let videoDevices = mediaDeviceInfoList.filter(function (deviceInfo) {
+        return deviceInfo.kind == 'videoinput';
+      });
+      return navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          deviceId: videoDevices[0].deviceId
+        }
+      });
+    })
+    .then(function (mediaStream) {
+      videoStreamInUse = mediaStream;
+      document.querySelector('video').src = window.URL.createObjectURL(mediaStream);
+    })
+}
 
+function stopVideo() {
+  videoStreamInUse.getVideoTracks()[0].stop();
+}
+
+function snapshot() {
+  let videoElement = document.querySelector('video');
+  let canvasElement = document.querySelector('canvas');
+  let context = canvasElement.getContext('2d');
+  context.drawImage(videoElement, 0, 0, videoElement.width, videoElement.height);
+  document.querySelector('img').src = canvasElement.toDataURL('image/webp');
+}
+function reset() {
+  document.querySelector('img').src = 0;
+}
