@@ -1,8 +1,6 @@
 <p id="notice"><%= notice %></p>
 
 <h1>Face Detections</h1>
-<script src="./js/application.js"></script>
-<link rel="stylesheet" href="./css/application.css">
 
 <table>
   <thead>
@@ -12,18 +10,11 @@
   </thead>
 
   <tbody>
-  <video id="target" width="800" height="600" autoplay></video>
-
-    <% @face_detections.each do |face_detection| %>
-      <tr>
-        <td><%= link_to 'Show', face_detection %></td>
-        <td><%= link_to 'Edit', edit_face_detection_path(face_detection) %></td>
-        <td><%= link_to 'Destroy', face_detection, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
+    <video id="target" width="800" height="600" autoplay></video>
   </tbody>
 </table>
 
 <br>
 
-<%= link_to 'New Face Detection', new_face_detection_path %>
+<script src="./js/application.js"></script>
+<link rel="stylesheet" href="./css/application.css">
