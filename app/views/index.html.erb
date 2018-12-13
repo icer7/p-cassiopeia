@@ -15,13 +15,22 @@
     <button onclick="stopVideo()">ビデオ終了</button>
     <button onclick="snapshot()">写真撮影</button>
     <button onclick="reset()">写真削除</button>
+    <button onclick="submit()">計測開始</button>
 
-    <h2>ビデオ撮影</h2>
-    <video autoplay width="320" height="240"></video>
+    <div class="video">
+      <h2>ビデオ撮影</h2>
+        <p>
+          <video autoplay width="320" height="240"></video>
+        </p>
+    </div>
 
-    <h2>写真撮影</h2>
-    <img/>
-    <canvas id="canvas" style="display: none" width="320" height="240"></canvas>
+    <div class="snapshot">
+      <h2>撮影写真</h2>
+        <p>
+          <img/>
+          <canvas id="canvas" style="display: none" width="320" height="240"></canvas>
+        </p>
+    </div>
   </tbody>
 
 </table>

@@ -60,3 +60,8 @@ function snapshot() {
 function reset() {
   document.querySelector('img').src = 0;
 }
+
+function submit() {
+  let url = location.href;
+  location.href = url + "submit_pages/home";
+}
