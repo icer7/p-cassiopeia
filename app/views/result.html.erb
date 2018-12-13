@@ -104,12 +104,7 @@
       dragging = false; // ドラッグ終了
     }
 
-    function drawRect(objX1) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // キャンバスをクリア
-      ctx.fillRect(objX1, objY, objWidth, objHeight);
-      ctx.fillRect(objX2, objY, objWidth, objHeight);
-    }
-    function drawRect(objX2) {
+    function drawRect() {
       ctx.clearRect(0, 0, canvas.width, canvas.height); // キャンバスをクリア
       ctx.fillRect(objX1, objY, objWidth, objHeight);
       ctx.fillRect(objX2, objY, objWidth, objHeight);
@@ -118,50 +113,50 @@
     canvas.addEventListener('mousemove', onMove, false);
     canvas.addEventListener('mouseup', onUp, false);
 
-    canvas.onclick = function(e) {
-      if (count >= 2) {
-        count = 1;
-        ctx.clearRect(0, 0, canvasW, canvasH);
+    // canvas.onclick = function(e) {
+    //   if (count >= 2) {
+    //     count = 1;
+    //     ctx.clearRect(0, 0, canvasW, canvasH);
 
-        var rect = e.target.getBoundingClientRect();
-        mouseX1 = e.clientX - Math.floor(rect.left) - 2;
-        mouseY1 = e.clientY - Math.floor(rect.top) - 2;
+    //     var rect = e.target.getBoundingClientRect();
+    //     mouseX1 = e.clientX - Math.floor(rect.left) - 2;
+    //     mouseY1 = e.clientY - Math.floor(rect.top) - 2;
 
-        ctx.beginPath();
-        ctx.moveTo(mouseX1, 100, 5, 0, Math.PI * 2, false);
-        ctx.lineTo(mouseX1, 300, 5, 0, Math.PI * 2, false);
-        ctx.stroke();
+    //     ctx.beginPath();
+    //     ctx.moveTo(mouseX1, 100, 5, 0, Math.PI * 2, false);
+    //     ctx.lineTo(mouseX1, 300, 5, 0, Math.PI * 2, false);
+    //     ctx.stroke();
 
-        var test_table = ""
-        var element = document.getElementById('test-table');
-        element.innerHTML = test_table;
-      }
-      else if (count == 1) {
-        count += 1;
-        var rect = e.target.getBoundingClientRect();
-        mouseX2 = e.clientX - Math.floor(rect.left) - 2;
-        mouseY2 = e.clientY - Math.floor(rect.top) - 2;
+    //     var test_table = ""
+    //     var element = document.getElementById('test-table');
+    //     element.innerHTML = test_table;
+    //   }
+    //   else if (count == 1) {
+    //     count += 1;
+    //     var rect = e.target.getBoundingClientRect();
+    //     mouseX2 = e.clientX - Math.floor(rect.left) - 2;
+    //     mouseY2 = e.clientY - Math.floor(rect.top) - 2;
 
-        ctx.beginPath();
-        ctx.moveTo(mouseX2, 100, 5, 0, Math.PI * 2, false);
-        ctx.lineTo(mouseX2, 300, 5, 0, Math.PI * 2, false);
-        ctx.stroke();
+    //     ctx.beginPath();
+    //     ctx.moveTo(mouseX2, 100, 5, 0, Math.PI * 2, false);
+    //     ctx.lineTo(mouseX2, 300, 5, 0, Math.PI * 2, false);
+    //     ctx.stroke();
 
-        var test_table = Math.abs(mouseX1 - mouseX2)
-        var element = document.getElementById('test-table');
-        element.innerHTML = test_table;
-      }
-      else {
-        count += 1;
-        var rect = e.target.getBoundingClientRect();
-        mouseX1 = e.clientX - Math.floor(rect.left) - 2;
-        mouseY1 = e.clientY - Math.floor(rect.top) - 2;
+    //     var test_table = Math.abs(mouseX1 - mouseX2)
+    //     var element = document.getElementById('test-table');
+    //     element.innerHTML = test_table;
+    //   }
+    //   else {
+    //     count += 1;
+    //     var rect = e.target.getBoundingClientRect();
+    //     mouseX1 = e.clientX - Math.floor(rect.left) - 2;
+    //     mouseY1 = e.clientY - Math.floor(rect.top) - 2;
 
-        ctx.beginPath();
-        ctx.moveTo(mouseX1, 100, 5, 0, Math.PI * 2, false);
-        ctx.lineTo(mouseX1, 300, 5, 0, Math.PI * 2, false);
-        ctx.stroke();
-      }
-    }
+    //     ctx.beginPath();
+    //     ctx.moveTo(mouseX1, 100, 5, 0, Math.PI * 2, false);
+    //     ctx.lineTo(mouseX1, 300, 5, 0, Math.PI * 2, false);
+    //     ctx.stroke();
+    //   }
+    // }
   };
 </script>
