@@ -11,12 +11,70 @@
   </thead>
 
   <tbody>
-    <p>
-      <img src="image/webp"/>
-      <canvas id="canvas" width="620" height="440"></canvas>
-    </p>
+    <canvas style="background-color: yellow;" id="axisCanvas"></canvas>
+    <div>計測結果</div>
+      <a id="test-table"></a>
   </tbody>
 
 </table>
 
 <br>
+
+<script>
+  var canvas;
+  var ctx;
+  var canvasW = 400;
+  var canvasH = 400;
+  var mouseX1;
+  var mouseY1;
+  var count = 0;
+
+  window.onload = function() {
+    canvas = document.getElementById('axisCanvas');
+    canvas.width = canvasW;
+    canvas.height = canvasH;
+    ctx = canvas.getContext('2d');
+
+    canvas.onclick = function(e) {
+      if (count >= 2) {
+        count = 1;
+        console.log("削除")
+        ctx.clearRect(0, 0, canvasW, canvasH);
+
+        var rect = e.target.getBoundingClientRect();
+        mouseX1 = e.clientX - Math.floor(rect.left) - 2;
+        mouseY1 = e.clientY - Math.floor(rect.top) - 2;
+
+        ctx.beginPath();
+        ctx.arc(mouseX1, mouseY1, 5, 0, Math.PI * 2, false);
+        ctx.fill();
+
+        var maxWidth = 100;
+        ctx.textAlign = 'right';
+        ctx.fillText('( ' + mouseX1 + ', ' + mouseY1 + ' )', canvasW - 20, canvasH - 20, maxWidth);
+
+        var test_table = '( ' + mouseX1 + ', ' + mouseY1 + ' )'
+        var element = document.getElementById('test-table');
+        element.innerHTML = test_table;
+      } else {
+        count += 1;
+        console.log(count);
+        var rect = e.target.getBoundingClientRect();
+        mouseX1 = e.clientX - Math.floor(rect.left) - 2;
+        mouseY1 = e.clientY - Math.floor(rect.top) - 2;
+
+        ctx.beginPath();
+        ctx.arc(mouseX1, mouseY1, 5, 0, Math.PI * 2, false);
+        ctx.fill();
+
+        var maxWidth = 100;
+        ctx.textAlign = 'right';
+        ctx.fillText('( ' + mouseX1 + ', ' + mouseY1 + ' )', canvasW - 20, canvasH - 20, maxWidth);
+
+        var test_table = '( ' + mouseX1 + ', ' + mouseY1 + ' )'
+        var element = document.getElementById('test-table');
+        element.innerHTML = test_table;
+      }
+    }
+  };
+</script>
