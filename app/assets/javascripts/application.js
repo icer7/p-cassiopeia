@@ -56,6 +56,7 @@ function snapshot() {
   context.drawImage(videoElement, 0, 0, videoElement.width, videoElement.height);
   document.querySelector('img').src = canvasElement.toDataURL('image/webp');
 }
+
 function reset() {
   document.querySelector('img').src = 0;
 }

@@ -1,7 +1,6 @@
 class ApplicationController < ActionController::Base
 
-  def hello
-    render html: "hello world"
+  def home
+    render :file => "/app/views/index.html.erb"
   end
-
 end

@@ -1,2 +1,0 @@
-class FaceDetection < ApplicationRecord
-end
