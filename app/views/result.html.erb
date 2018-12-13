@@ -27,6 +27,8 @@
   var canvasH = 400;
   var mouseX1;
   var mouseY1;
+  var mouseX2;
+  var mouseY2;
   var count = 0;
 
   window.onload = function() {
@@ -38,7 +40,6 @@
     canvas.onclick = function(e) {
       if (count >= 2) {
         count = 1;
-        console.log("削除")
         ctx.clearRect(0, 0, canvasW, canvasH);
 
         var rect = e.target.getBoundingClientRect();
@@ -48,17 +49,23 @@
         ctx.beginPath();
         ctx.arc(mouseX1, mouseY1, 5, 0, Math.PI * 2, false);
         ctx.fill();
+      }
+      else if (count == 1) {
+        count += 1;
+        var rect = e.target.getBoundingClientRect();
+        mouseX2 = e.clientX - Math.floor(rect.left) - 2;
+        mouseY2 = e.clientY - Math.floor(rect.top) - 2;
 
-        var maxWidth = 100;
-        ctx.textAlign = 'right';
-        ctx.fillText('( ' + mouseX1 + ', ' + mouseY1 + ' )', canvasW - 20, canvasH - 20, maxWidth);
+        ctx.beginPath();
+        ctx.arc(mouseX2, mouseY2, 5, 0, Math.PI * 2, false);
+        ctx.fill();
 
-        var test_table = '( ' + mouseX1 + ', ' + mouseY1 + ' )'
+        var test_table = '( ' + Math.abs(mouseX1 - mouseX2) + ', ' + Math.abs(mouseY1 - mouseY2) + ' )'
         var element = document.getElementById('test-table');
         element.innerHTML = test_table;
-      } else {
+      }
+      else {
         count += 1;
-        console.log(count);
         var rect = e.target.getBoundingClientRect();
         mouseX1 = e.clientX - Math.floor(rect.left) - 2;
         mouseY1 = e.clientY - Math.floor(rect.top) - 2;
@@ -66,14 +73,6 @@
         ctx.beginPath();
         ctx.arc(mouseX1, mouseY1, 5, 0, Math.PI * 2, false);
         ctx.fill();
-
-        var maxWidth = 100;
-        ctx.textAlign = 'right';
-        ctx.fillText('( ' + mouseX1 + ', ' + mouseY1 + ' )', canvasW - 20, canvasH - 20, maxWidth);
-
-        var test_table = '( ' + mouseX1 + ', ' + mouseY1 + ' )'
-        var element = document.getElementById('test-table');
-        element.innerHTML = test_table;
       }
     }
   };
