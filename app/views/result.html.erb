@@ -47,8 +47,9 @@
         mouseY1 = e.clientY - Math.floor(rect.top) - 2;
 
         ctx.beginPath();
-        ctx.arc(mouseX1, mouseY1, 5, 0, Math.PI * 2, false);
-        ctx.fill();
+        ctx.moveTo(mouseX1, 100, 5, 0, Math.PI * 2, false);
+        ctx.lineTo(mouseX1, 300, 5, 0, Math.PI * 2, false);
+        ctx.stroke();
       }
       else if (count == 1) {
         count += 1;
@@ -57,10 +58,11 @@
         mouseY2 = e.clientY - Math.floor(rect.top) - 2;
 
         ctx.beginPath();
-        ctx.arc(mouseX2, mouseY2, 5, 0, Math.PI * 2, false);
-        ctx.fill();
+        ctx.moveTo(mouseX2, 100, 5, 0, Math.PI * 2, false);
+        ctx.lineTo(mouseX2, 300, 5, 0, Math.PI * 2, false);
+        ctx.stroke();
 
-        var test_table = '( ' + Math.abs(mouseX1 - mouseX2) + ', ' + Math.abs(mouseY1 - mouseY2) + ' )'
+        var test_table = Math.abs(mouseX1 - mouseX2)
         var element = document.getElementById('test-table');
         element.innerHTML = test_table;
       }
@@ -71,8 +73,9 @@
         mouseY1 = e.clientY - Math.floor(rect.top) - 2;
 
         ctx.beginPath();
-        ctx.arc(mouseX1, mouseY1, 5, 0, Math.PI * 2, false);
-        ctx.fill();
+        ctx.moveTo(mouseX1, 100, 5, 0, Math.PI * 2, false);
+        ctx.lineTo(mouseX1, 300, 5, 0, Math.PI * 2, false);
+        ctx.stroke();
       }
     }
   };
