@@ -21,14 +21,10 @@
 <br>
 
 <script>
-  var canvas;
-  var ctx;
+  var canvas, ctx;
   var canvasW = 400;
   var canvasH = 400;
-  var mouseX1;
-  var mouseY1;
-  var mouseX2;
-  var mouseY2;
+  var mouseX1, mouseY1, mouseX2, mouseY2;
   var count = 0;
 
   window.onload = function() {
@@ -36,6 +32,91 @@
     canvas.width = canvasW;
     canvas.height = canvasH;
     ctx = canvas.getContext('2d');
+
+    var objX1, objX2, objY;
+    var objWidth, objHeight;
+
+    objWidth = 5;
+    objHeight = 200;
+
+    // オブジェクトの座標を定義(キャンバスの中央に表示)
+    objX1 = canvas.width / 2 - objWidth / 2;
+    objY = canvas.height / 2 - objHeight / 2;
+    objX2 = objX1 - 50;
+
+    // オブジェクトを描画
+    drawRect(objX1);
+    drawRect(objX2);
+
+    function drawRect(objX1) {
+      ctx.fillRect(objX1, objY, objWidth, objHeight);
+    }
+    function drawRect(objX2) {
+      ctx.fillRect(objX2, objY, objWidth, objHeight);
+    }
+
+    var x, y, relX1, relX2, relY;
+    var dragging = false;
+
+    function onDown(e) {
+      // キャンバスの左上端の座標を取得
+      var offsetX = canvas.getBoundingClientRect().left;
+      var offsetY = canvas.getBoundingClientRect().top;
+
+      // マウスが押された座標を取得
+      x = e.clientX - offsetX;
+      y = e.clientY - offsetY;
+
+      // オブジェクト上の座標かどうかを判定
+      if (objX1 < x && (objX1 + objWidth) > x && objY < y && (objY + objHeight) > y) {
+        dragging = true; // ドラッグ開始
+        relX1 = objX1 - x;
+        relY = objY - y;
+      }
+      if (objX2 < x && (objX2 + objWidth) > x && objY < y && (objY + objHeight) > y) {
+        dragging = true; // ドラッグ開始
+        relX2 = objX2 - x;
+        relY = objY - y;
+      }
+    }
+
+    canvas.addEventListener('mousedown', onDown, false);
+
+    function onMove(e) {
+      // キャンバスの左上端の座標を取得
+      var offsetX = canvas.getBoundingClientRect().left;
+      var offsetY = canvas.getBoundingClientRect().top;
+
+      // マウスが移動した先の座標を取得
+      x = e.clientX - offsetX;
+      y = e.clientY - offsetY;
+
+      // ドラッグが開始されていればオブジェクトの座標を更新して再描画
+      if (dragging) {
+        objX1 = x + relX1;
+        objY = y + relY;
+        objX2 = x + relX2;
+        drawRect();
+      }
+    }
+
+    function onUp(e) {
+      dragging = false; // ドラッグ終了
+    }
+
+    function drawRect(objX1) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // キャンバスをクリア
+      ctx.fillRect(objX1, objY, objWidth, objHeight);
+      ctx.fillRect(objX2, objY, objWidth, objHeight);
+    }
+    function drawRect(objX2) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // キャンバスをクリア
+      ctx.fillRect(objX1, objY, objWidth, objHeight);
+      ctx.fillRect(objX2, objY, objWidth, objHeight);
+    }
+
+    canvas.addEventListener('mousemove', onMove, false);
+    canvas.addEventListener('mouseup', onUp, false);
 
     canvas.onclick = function(e) {
       if (count >= 2) {
