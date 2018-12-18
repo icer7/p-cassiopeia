@@ -45,13 +45,10 @@
     objX2 = objX1 - 50;
 
     // オブジェクトを描画
-    drawRect(objX1);
-    drawRect(objX2);
+    drawRect();
 
-    function drawRect(objX1) {
+    function drawRect() {
       ctx.fillRect(objX1, objY, objWidth, objHeight);
-    }
-    function drawRect(objX2) {
       ctx.fillRect(objX2, objY, objWidth, objHeight);
     }
 
@@ -71,12 +68,10 @@
       if (objX1 < x && (objX1 + objWidth) > x && objY < y && (objY + objHeight) > y) {
         dragging = true; // ドラッグ開始
         relX1 = objX1 - x;
-        relY = objY - y;
       }
       if (objX2 < x && (objX2 + objWidth) > x && objY < y && (objY + objHeight) > y) {
         dragging = true; // ドラッグ開始
         relX2 = objX2 - x;
-        relY = objY - y;
       }
     }
 
@@ -94,8 +89,7 @@
       // ドラッグが開始されていればオブジェクトの座標を更新して再描画
       if (dragging) {
         objX1 = x + relX1;
-        objY = y + relY;
-        objX2 = x + relX2;
+        // objX2 = x + relX2;
         drawRect();
       }
     }
