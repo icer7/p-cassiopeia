@@ -4,120 +4,186 @@
 </div>
 
 <div class="video">
-    <p>
-      <video autoplay width="320" height="426" id="local_video"></video>
-    </p>
-    <canvas id="snapshot" width="320" height="426"></canvas>
-    </div>
+  <video playsinline autoplay id="local_video"></video>
+  <p id="overlay" style="width: 100px; height: 100px; top:150px; left:100px;"></p>
+  <canvas id="snapshot"></canvas>
+</div>
+
 <div class="ui grid">
   <div class="five wide column">
     <button class="ui primary button" id="capture" onclick="snapshot_first()">撮影</button>
   </div>
+
   <div class="five wide column">
     <button class="ui yellow button" id="reset" onclick="reset()">reset</button>
   </div>
+
   <div class="five wide column">
     <button class="ui green button" id="submit" onclick="submit()">計測</button>
   </div>
 </div>
 
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 
-
+<style>
+.video {
+  position:relative;
+}
+#overlay {
+  position:absolute;
+  border-radius: 50%;
+  border: dashed 3px skyblue;
+}
+</style>
 
 <script>
-function startVideo() {
-  var constraints = { audio: false, video: {facingMode: 'user'} }
-  var localVideo = document.getElementById('local_video');
-  navigator.mediaDevices.getUserMedia(constraints)
-  .then(function (stream) { // success
-      localVideo.srcObject = stream;
+  var getDevice = (function(){
+    var ua = navigator.userAgent;
+    if(ua.indexOf('iPhone') > 0 || ua.indexOf('iPod') > 0 || ua.indexOf('Android') > 0 && ua.indexOf('Mobile') > 0){
+        return 'sp';
+    }else if(ua.indexOf('iPad') > 0 || ua.indexOf('Android') > 0){
+        return 'tab';
+    }else{
+        return 'other';
+    }
+  })();
+  if( getDevice == 'sp' ){
+    let video = document.getElementById('local_video');
+    let snapshot = document.getElementById('snapshot');
+    video.width = "320";
+    video.height = "480";
+    snapshot.width = "320";
+    snapshot.height = "480";
+  }else if( getDevice == 'tab' ){
+    let video = document.getElementById('local_video');
+    let snapshot = document.getElementById('snapshot');
+    video.width = "320";
+    video.height = "480";
+    snapshot.width = "320";
+    snapshot.height = "480";
+  }else if( getDevice == 'other' ){
+    let video = document.getElementById('local_video');
+    let snapshot = document.getElementById('snapshot');
+    video.width = "620";
+    video.height = "480";
+    snapshot.width = "620";
+    snapshot.height = "480";
+    var overlay = document.getElementById('overlay');
+    var cssText = overlay.style.cssText;
+    overlay.style.cssText += 'width: 200px !important;';
+    overlay.style.cssText += 'height: 200px !important;'
+    overlay.style.cssText += 'left: 200px !important;'
+  }
 
-  }).catch(function (error) { // error
-      console.error('mediaDevice.getUserMedia() error:', error);
-      return;
+  function startVideo() {
+    var constraints = { audio: false, video: {facingMode: 'user'} }
+    var localVideo = document.getElementById('local_video');
+    navigator.mediaDevices.getUserMedia(constraints)
+    .then(function (stream) { // success
+        localVideo.srcObject = stream;
+    }).catch(function (error) { // error
+        console.error('mediaDevice.getUserMedia() error:', error);
+        return;
+    });
+  }
+  const constraints = {
+    audio: false,
+    video: {facingMode: 'user'}
+  };
+
+  let localVideo = document.getElementById('local_video');
+  let videoElement = document.querySelector('video');
+  let canvasElement = window.canvas = document.querySelector('canvas');
+  let context = canvasElement.getContext('2d');
+  context.transform(-1, 0, 0, 1, videoElement.width, 0);
+
+
+  function handleSuccess(stream) {
+    window.stream = stream; // make stream available to browser console
+    localVideo.srcObject = stream;
+  }
+
+  function handleError(error) {
+    console.log('navigator.getUserMedia error: ', error);
+  }
+
+  function startVideo() {
+    navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
+  }
+
+  function stopVideo() {
+  }
+
+  var count;
+  var id;
+  function snapshot_first() {
+    //ボタンを非表示
+    document.getElementById('capture').style.display="none";
+
+    count = 30;
+    document.getElementById('message').innerHTML = String(Math.ceil(count / 10));
+    id = setInterval(snapshot_timer, 100);
+  }
+
+  var snapshot_timer = function(){
+    count--;
+
+    var str = "■■";
+    document.getElementById('message').innerHTML = String(Math.ceil(count / 10)) + str.repeat( (30 - count) % 10 );
+    if (count == 0) {
+      clearInterval(id);
+      snapshot();
+    }
+  };
+
+  function snapshot() {
+    let videoElement = document.querySelector('video');
+    let canvasElement = document.querySelector('canvas');
+    let context = canvasElement.getContext('2d');
+    context.drawImage(videoElement, 0, 0, videoElement.width, videoElement.height);
+
+    //ボタンを表示
+    document.getElementById('capture').style.display="none";
+    document.getElementById('submit').style.display="block";
+    document.getElementById('reset').style.display="block";
+    document.getElementById('snapshot').style.display="block";
+    document.getElementById('local_video').style.display="none";
+  }
+
+  function reset() {
+    document.getElementById('capture').style.display="block";
+    document.getElementById('submit').style.display="none";
+    document.getElementById('reset').style.display="none";
+    document.getElementById('snapshot').style.display="none";
+    document.getElementById('local_video').style.display="block";
+  }
+
+  function submit() {
+    var canvas = document.querySelector('canvas');
+    var base64 = canvas.toDataURL('image/png');
+    var bin = atob(base64.replace(/^.*,/, ''));
+    var buffer = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) {
+      buffer[i] = bin.charCodeAt(i);
+    }
+
+    $.ajax({
+      url: '/images/1/upload',
+      type: 'PUT',
+      contentType: 'application/octet-stream',
+      data: buffer.buffer,
+      processData: false,
+      success: function(response) {
+        let url = location.href;
+        location.href = url + "submit_pages/home";
+      }
   });
 }
 
-let videoElement = document.querySelector('video');
-let canvasElement = document.querySelector('canvas');
-let context = canvasElement.getContext('2d');
-context.transform(-1, 0, 0, 1, videoElement.width, 0);
-
-function stopVideo() {
-  videoStreamInUse.getVideoTracks()[0].stop();
-}
-
-var count;
-var id;
-function snapshot_first() {
-  //ボタンを非表示
-  document.getElementById('capture').style.display="none";
-
-  count = 30;
-  document.getElementById('message').innerHTML = String(Math.ceil(count / 10));
-  id = setInterval(snapshot_timer, 100);
-}
-
-var snapshot_timer = function(){
-  count--;
-
-  var str = "■■"; 
-  document.getElementById('message').innerHTML = String(Math.ceil(count / 10)) + str.repeat( (30 - count) % 10 );
-  if (count == 0) {
-    clearInterval(id);
-    snapshot();
-  }
-};
-
-function snapshot() {
-  let videoElement = document.querySelector('video');
-  let canvasElement = document.querySelector('canvas');
-  let context = canvasElement.getContext('2d');
-  context.drawImage(videoElement, 0, 0, videoElement.width, videoElement.height);
-
-  //ボタンを表示
-  document.getElementById('capture').style.display="none";
-  document.getElementById('submit').style.display="block";
-  document.getElementById('reset').style.display="block";
-  document.getElementById('snapshot').style.display="block";
-  document.getElementById('local_video').style.display="none";
-}
-
-function reset() {
-  document.getElementById('capture').style.display="block";
+  //顔写真を受け取るまで送信画面を非表示にする
   document.getElementById('submit').style.display="none";
   document.getElementById('reset').style.display="none";
   document.getElementById('snapshot').style.display="none";
-  document.getElementById('local_video').style.display="block";
-}
 
-function submit() {
-  var canvas = document.querySelector('canvas');
-  var base64 = canvas.toDataURL('image/png');
-  var bin = atob(base64.replace(/^.*,/, ''));
-  var buffer = new Uint8Array(bin.length);
-  for (var i = 0; i < bin.length; i++) {
-    buffer[i] = bin.charCodeAt(i);
-  }
-
-  $.ajax({
-    url: '/images/1/upload',
-    type: 'PUT',
-    contentType: 'application/octet-stream',
-    data: buffer.buffer,
-    processData: false,
-    success: function(response) {
-      let url = location.href;
-      location.href = url + "submit_pages/home";
-    }
- });
-
-}
-
-//顔写真を受け取るまで送信画面を非表示にする
-document.getElementById('submit').style.display="none";
-document.getElementById('reset').style.display="none";
-document.getElementById('snapshot').style.display="none";
-
-startVideo();
+  startVideo();
 </script>

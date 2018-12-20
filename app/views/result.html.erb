@@ -2,16 +2,27 @@
 <div class="ui message">
 赤い線を首に、青い線を背中に合わせてください
 </div>
+
 <div>
   <canvas style="background-color: white;" id="axisCanvas"></canvas>
   <div class="ui grid">
-    <div class="two wide column"></div>
-    <div class="four wide column"></div>
-    <div class="four wide column">計測結果</div>
-    <div class="four wide column"><div class="ui label" id="result-value"></div></div>
-  
+    <div class="two wide column">
+    </div>
+
+    <div class="four wide column">
+    </div>
+
+    <div class="four wide column">
+      計測結果
+    </div>
+
+    <div class="four wide column">
+      <div class="ui label" id="result-value">
+      </div>
+    </div>
   </div>
 </div>
+
 <a id="test-table"></a>
 <%= link_to "始めに戻る", "/", class: "ui primary button" %>
 </table>
@@ -19,9 +30,32 @@
 <br>
 
 <script>
+  var getDevice = (function(){
+    var ua = navigator.userAgent;
+    if(ua.indexOf('iPhone') > 0 || ua.indexOf('iPod') > 0 || ua.indexOf('Android') > 0 && ua.indexOf('Mobile') > 0){
+        return 'sp';
+    }else if(ua.indexOf('iPad') > 0 || ua.indexOf('Android') > 0){
+        return 'tab';
+    }else{
+        return 'other';
+    }
+  })();
+  if( getDevice == 'sp' ){
+    console.log("sp")
+    var width = "320";
+    var height = "480";
+  }else if( getDevice == 'tab' ){
+    console.log("tab")
+    var width = "320";
+    var height = "480";
+  }else if( getDevice == 'other' ){
+    console.log("other")
+    var width = "620";
+    var height = "480";
+  }
   var canvas, ctx;
-  var canvasW = 320;
-  var canvasH = 426;
+  var canvasW = width;
+  var canvasH = height;
   var img;
   var objX1, objX2, objY;
   var objWidth = 2;
@@ -37,8 +71,6 @@
   objX1 = canvas.width * 2 / 3 - objWidth / 2;
   objX2 = objX1 + 50;
   objY = 0;
-
-
 
   window.onload = function() {
     drawResultValue();
@@ -61,7 +93,7 @@
       var str = String(abs((objX1 - objX2) * 0.16).toFixed(1)) + " cm";
       document.getElementById("result-value").innerText = str;
     }
-  
+
     var x, y, relX1, relX2;
     var dragging = 0;
 
@@ -104,7 +136,7 @@
     function onMove(tx, ty) {
       if (dragging == 0) {
         return;
-      } 
+      }
       // キャンバスの左上端の座標を取得
       var offsetX = canvas.getBoundingClientRect().left;
       var offsetY = canvas.getBoundingClientRect().top;
@@ -148,6 +180,6 @@
 
       window.requestAnimationFrame((ts) => loop(ts));
     }
-    
-    window.requestAnimationFrame((ts) => loop(ts));  };
+    window.requestAnimationFrame((ts) => loop(ts));
+  };
 </script>
