@@ -41,17 +41,23 @@
     }
   })();
   if( getDevice == 'sp' ){
-    console.log("sp")
     var width = "320";
     var height = "480";
+    var line_red = 100;
+    var line_blue = 215;
+    var n = 0.1566;
   }else if( getDevice == 'tab' ){
-    console.log("tab")
     var width = "320";
     var height = "480";
+    var line_red = 100;
+    var line_blue = 215;
+    var n = 0.1566;
   }else if( getDevice == 'other' ){
-    console.log("other")
     var width = "620";
     var height = "480";
+    var line_red = 200;
+    var line_blue = 400;
+    var n = 0.09;
   }
   var canvas, ctx;
   var canvasW = width;
@@ -68,8 +74,8 @@
   ctx = canvas.getContext('2d');
 
   // オブジェクトの座標を定義
-  objX1 = canvas.width * 2 / 3 - objWidth / 2;
-  objX2 = objX1 + 50;
+  objX1 = line_red;
+  objX2 = line_blue;
   objY = 0;
 
   window.onload = function() {
@@ -90,7 +96,7 @@
       ctx.fillRect(objX2, objY, objWidth, objHeight);
     }
     function drawResultValue () {
-      var str = String(abs((objX1 - objX2) * 0.16).toFixed(1)) + " cm";
+      var str = String(abs((objX1 - objX2) * n).toFixed(1)) + " cm";
       document.getElementById("result-value").innerText = str;
     }
 

@@ -24,7 +24,6 @@
 </div>
 
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-
 <style>
 .video {
   position:relative;
@@ -54,6 +53,12 @@
     video.height = "480";
     snapshot.width = "320";
     snapshot.height = "480";
+    var overlay = document.getElementById('overlay');
+    var cssText = overlay.style.cssText;
+    overlay.style.cssText += 'width: 115px !important;';
+    overlay.style.cssText += 'height: 115px !important;'
+    overlay.style.cssText += 'left: 100px !important;'
+    overlay.style.cssText += 'top: 180px !important;'
   }else if( getDevice == 'tab' ){
     let video = document.getElementById('local_video');
     let snapshot = document.getElementById('snapshot');
@@ -61,6 +66,12 @@
     video.height = "480";
     snapshot.width = "320";
     snapshot.height = "480";
+    var overlay = document.getElementById('overlay');
+    var cssText = overlay.style.cssText;
+    overlay.style.cssText += 'width: 115px !important;';
+    overlay.style.cssText += 'height: 115px !important;'
+    overlay.style.cssText += 'left: 100px !important;'
+    overlay.style.cssText += 'top: 180px !important;'
   }else if( getDevice == 'other' ){
     let video = document.getElementById('local_video');
     let snapshot = document.getElementById('snapshot');
@@ -75,17 +86,6 @@
     overlay.style.cssText += 'left: 200px !important;'
   }
 
-  function startVideo() {
-    var constraints = { audio: false, video: {facingMode: 'user'} }
-    var localVideo = document.getElementById('local_video');
-    navigator.mediaDevices.getUserMedia(constraints)
-    .then(function (stream) { // success
-        localVideo.srcObject = stream;
-    }).catch(function (error) { // error
-        console.error('mediaDevice.getUserMedia() error:', error);
-        return;
-    });
-  }
   const constraints = {
     audio: false,
     video: {facingMode: 'user'}
@@ -177,8 +177,8 @@
         let url = location.href;
         location.href = url + "submit_pages/home";
       }
-  });
-}
+    });
+  }
 
   //顔写真を受け取るまで送信画面を非表示にする
   document.getElementById('submit').style.display="none";
