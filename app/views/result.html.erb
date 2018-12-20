@@ -1,156 +1,153 @@
 <p id="notice"><%= notice %></p>
-
-<h1>計測画面</h1>
-
-<table>
-
-  <thead>
-    <tr>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <canvas style="background-color: yellow;" id="axisCanvas"></canvas>
-    <div>計測結果</div>
-      <a id="test-table"></a>
-  </tbody>
-
+<div class="ui message">
+赤い線を首に、青い線を背中に合わせてください
+</div>
+<div>
+  <canvas style="background-color: white;" id="axisCanvas"></canvas>
+  <div class="ui grid">
+    <div class="two wide column"></div>
+    <div class="four wide column"></div>
+    <div class="four wide column">計測結果</div>
+    <div class="four wide column"><div class="ui label" id="result-value"></div></div>
+  
+  </div>
+</div>
+<a id="test-table"></a>
+<%= link_to "始めに戻る", "/", class: "ui primary button" %>
 </table>
 
 <br>
 
 <script>
   var canvas, ctx;
-  var canvasW = 400;
-  var canvasH = 400;
-  var mouseX1, mouseY1, mouseX2, mouseY2;
-  var count = 0;
+  var canvasW = 320;
+  var canvasH = 426;
+  var img;
+  var objX1, objX2, objY;
+  var objWidth = 2;
+  var objHeight = canvasH;
+  var hitWidth = 10;
+
+  canvas = document.getElementById('axisCanvas');
+  canvas.width = canvasW;
+  canvas.height = canvasH;
+  ctx = canvas.getContext('2d');
+
+  // オブジェクトの座標を定義
+  objX1 = canvas.width * 2 / 3 - objWidth / 2;
+  objX2 = objX1 + 50;
+  objY = 0;
+
+
 
   window.onload = function() {
-    canvas = document.getElementById('axisCanvas');
-    canvas.width = canvasW;
-    canvas.height = canvasH;
-    ctx = canvas.getContext('2d');
+    drawResultValue();
 
-    var objX1, objX2, objY;
-    var objWidth, objHeight;
-
-    objWidth = 5;
-    objHeight = 200;
-
-    // オブジェクトの座標を定義(キャンバスの中央に表示)
-    objX1 = canvas.width / 2 - objWidth / 2;
-    objY = canvas.height / 2 - objHeight / 2;
-    objX2 = objX1 - 50;
-
-    // オブジェクトを描画
-    drawRect();
-
-    function drawRect() {
-      ctx.fillRect(objX1, objY, objWidth, objHeight);
-      ctx.fillRect(objX2, objY, objWidth, objHeight);
+    img = new Image();
+    img.src = "/images/1/download";
+    img.onload = function(){
+      ctx.drawImage(img, 0, 0, canvasW, canvasH);
     }
 
-    var x, y, relX1, relX2, relY;
-    var dragging = false;
+    function drawRect1(objX1) {
+      ctx.fillStyle = "rgb(200, 30, 30)";
+      ctx.fillRect(objX1, objY, objWidth, objHeight);
+    }
+    function drawRect2(objX2) {
+      ctx.fillStyle = "rgb(30, 30, 230)";
+      ctx.fillRect(objX2, objY, objWidth, objHeight);
+    }
+    function drawResultValue () {
+      var str = String(abs((objX1 - objX2) * 0.16).toFixed(1)) + " cm";
+      document.getElementById("result-value").innerText = str;
+    }
+  
+    var x, y, relX1, relX2;
+    var dragging = 0;
 
-    function onDown(e) {
+    function onDownTouch(event) {
+      var touch = event.targetTouches[0];
+      onDown(touch.pageX, touch.pageY);
+    }
+    function onDownMouse(event) {
+      onDown(event.clientX, event.clientY);
+    }
+    function onDown(tx, ty) {
       // キャンバスの左上端の座標を取得
       var offsetX = canvas.getBoundingClientRect().left;
       var offsetY = canvas.getBoundingClientRect().top;
 
       // マウスが押された座標を取得
-      x = e.clientX - offsetX;
-      y = e.clientY - offsetY;
+      x = tx - offsetX;
+      y = ty - offsetY;
 
       // オブジェクト上の座標かどうかを判定
-      if (objX1 < x && (objX1 + objWidth) > x && objY < y && (objY + objHeight) > y) {
-        dragging = true; // ドラッグ開始
+      if (objX1 < (x+hitWidth) && (objX1 + objWidth) > (x-hitWidth)) {
+        dragging = 1; // ドラッグ開始
         relX1 = objX1 - x;
-      }
-      if (objX2 < x && (objX2 + objWidth) > x && objY < y && (objY + objHeight) > y) {
-        dragging = true; // ドラッグ開始
+      } else if (objX2 < (x+hitWidth) && (objX2 + objWidth) > (x-hitWidth)) {
+        dragging = 2; // ドラッグ開始
         relX2 = objX2 - x;
       }
     }
 
-    canvas.addEventListener('mousedown', onDown, false);
+    function onMoveTouch(event) {
+      var touch = event.targetTouches[0];
+      onMove(touch.pageX, touch.pageY);
 
-    function onMove(e) {
+      // Call preventDefault() to prevent any further handling
+      event.preventDefault();
+    }
+    function onMoveMouse(event) {
+      onMove(event.clientX, event.clientY);
+    }
+    function onMove(tx, ty) {
+      if (dragging == 0) {
+        return;
+      } 
       // キャンバスの左上端の座標を取得
       var offsetX = canvas.getBoundingClientRect().left;
       var offsetY = canvas.getBoundingClientRect().top;
 
       // マウスが移動した先の座標を取得
-      x = e.clientX - offsetX;
-      y = e.clientY - offsetY;
+      x = tx - offsetX;
+      y = ty - offsetY;
 
       // ドラッグが開始されていればオブジェクトの座標を更新して再描画
-      if (dragging) {
+      if (dragging == 1) {
         objX1 = x + relX1;
-        // objX2 = x + relX2;
-        drawRect();
+      } else if (dragging == 2) {
+        objX2 = x + relX2;
       }
+
+      drawResultValue();
     }
 
-    function onUp(e) {
-      dragging = false; // ドラッグ終了
+    function onUp(event) {
+      dragging = 0; // ドラッグ終了
     }
 
-    function drawRect() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // キャンバスをクリア
-      ctx.fillRect(objX1, objY, objWidth, objHeight);
-      ctx.fillRect(objX2, objY, objWidth, objHeight);
-    }
-
-    canvas.addEventListener('mousemove', onMove, false);
+    canvas.addEventListener('touchstart', onDownTouch, false);
+    canvas.addEventListener('touchmove', onMoveTouch, false);
+    canvas.addEventListener('touchend', onUp, false);
+    canvas.addEventListener('mousedown', onDownMouse, false);
+    canvas.addEventListener('mousemove', onMoveMouse, false);
     canvas.addEventListener('mouseup', onUp, false);
 
-    // canvas.onclick = function(e) {
-    //   if (count >= 2) {
-    //     count = 1;
-    //     ctx.clearRect(0, 0, canvasW, canvasH);
+    function abs(val) {
+      return val < 0 ? -val : val;
+    };
 
-    //     var rect = e.target.getBoundingClientRect();
-    //     mouseX1 = e.clientX - Math.floor(rect.left) - 2;
-    //     mouseY1 = e.clientY - Math.floor(rect.top) - 2;
+    function loop(timestamp) {
+      ctx.clearRect(0, 0, canvasW, canvasH);
 
-    //     ctx.beginPath();
-    //     ctx.moveTo(mouseX1, 100, 5, 0, Math.PI * 2, false);
-    //     ctx.lineTo(mouseX1, 300, 5, 0, Math.PI * 2, false);
-    //     ctx.stroke();
+      ctx.drawImage(img, 0, 0, canvasW, canvasH);
+      // オブジェクトを描画
+      drawRect1(objX1);
+      drawRect2(objX2);
 
-    //     var test_table = ""
-    //     var element = document.getElementById('test-table');
-    //     element.innerHTML = test_table;
-    //   }
-    //   else if (count == 1) {
-    //     count += 1;
-    //     var rect = e.target.getBoundingClientRect();
-    //     mouseX2 = e.clientX - Math.floor(rect.left) - 2;
-    //     mouseY2 = e.clientY - Math.floor(rect.top) - 2;
-
-    //     ctx.beginPath();
-    //     ctx.moveTo(mouseX2, 100, 5, 0, Math.PI * 2, false);
-    //     ctx.lineTo(mouseX2, 300, 5, 0, Math.PI * 2, false);
-    //     ctx.stroke();
-
-    //     var test_table = Math.abs(mouseX1 - mouseX2)
-    //     var element = document.getElementById('test-table');
-    //     element.innerHTML = test_table;
-    //   }
-    //   else {
-    //     count += 1;
-    //     var rect = e.target.getBoundingClientRect();
-    //     mouseX1 = e.clientX - Math.floor(rect.left) - 2;
-    //     mouseY1 = e.clientY - Math.floor(rect.top) - 2;
-
-    //     ctx.beginPath();
-    //     ctx.moveTo(mouseX1, 100, 5, 0, Math.PI * 2, false);
-    //     ctx.lineTo(mouseX1, 300, 5, 0, Math.PI * 2, false);
-    //     ctx.stroke();
-    //   }
-    // }
-  };
+      window.requestAnimationFrame((ts) => loop(ts));
+    }
+    
+    window.requestAnimationFrame((ts) => loop(ts));  };
 </script>

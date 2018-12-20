@@ -1,38 +1,123 @@
 <p id="notice"><%= notice %></p>
+<div class="ui message center aligned" id="message">
+←←←左を向いて側面を撮影してください。
+</div>
 
-<h1>cassiopeia</h1>
-
-<table>
-
-  <thead>
-    <tr>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <button onclick="startVideo()">ビデオ開始</button>
-    <button onclick="stopVideo()">ビデオ終了</button>
-    <button onclick="snapshot()">写真撮影</button>
-    <button onclick="reset()">写真削除</button>
-    <button onclick="submit()">計測開始</button>
-
-    <div class="video">
-      <h2>ビデオ撮影</h2>
-        <p>
-          <video autoplay width="320" height="240"></video>
-        </p>
+<div class="video">
+    <p>
+      <video autoplay width="320" height="426" id="local_video"></video>
+    </p>
+    <canvas id="snapshot" width="320" height="426"></canvas>
     </div>
+<div class="ui grid">
+  <div class="five wide column">
+    <button class="ui primary button" id="capture" onclick="snapshot_first()">撮影</button>
+  </div>
+  <div class="five wide column">
+    <button class="ui yellow button" id="reset" onclick="reset()">reset</button>
+  </div>
+  <div class="five wide column">
+    <button class="ui green button" id="submit" onclick="submit()">計測</button>
+  </div>
+</div>
 
-    <div class="snapshot">
-      <h2>撮影写真</h2>
-        <p>
-          <img/>
-          <canvas id="canvas" style="display: none" width="320" height="240"></canvas>
-        </p>
-    </div>
-  </tbody>
 
-</table>
 
-<br>
+
+<script>
+function startVideo() {
+  var constraints = { audio: false, video: {facingMode: 'user'} }
+  var localVideo = document.getElementById('local_video');
+  navigator.mediaDevices.getUserMedia(constraints)
+  .then(function (stream) { // success
+      localVideo.srcObject = stream;
+
+  }).catch(function (error) { // error
+      console.error('mediaDevice.getUserMedia() error:', error);
+      return;
+  });
+}
+
+let videoElement = document.querySelector('video');
+let canvasElement = document.querySelector('canvas');
+let context = canvasElement.getContext('2d');
+context.transform(-1, 0, 0, 1, videoElement.width, 0);
+
+function stopVideo() {
+  videoStreamInUse.getVideoTracks()[0].stop();
+}
+
+var count;
+var id;
+function snapshot_first() {
+  //ボタンを非表示
+  document.getElementById('capture').style.display="none";
+
+  count = 30;
+  document.getElementById('message').innerHTML = String(Math.ceil(count / 10));
+  id = setInterval(snapshot_timer, 100);
+}
+
+var snapshot_timer = function(){
+  count--;
+
+  var str = "■■"; 
+  document.getElementById('message').innerHTML = String(Math.ceil(count / 10)) + str.repeat( (30 - count) % 10 );
+  if (count == 0) {
+    clearInterval(id);
+    snapshot();
+  }
+};
+
+function snapshot() {
+  let videoElement = document.querySelector('video');
+  let canvasElement = document.querySelector('canvas');
+  let context = canvasElement.getContext('2d');
+  context.drawImage(videoElement, 0, 0, videoElement.width, videoElement.height);
+
+  //ボタンを表示
+  document.getElementById('capture').style.display="none";
+  document.getElementById('submit').style.display="block";
+  document.getElementById('reset').style.display="block";
+  document.getElementById('snapshot').style.display="block";
+  document.getElementById('local_video').style.display="none";
+}
+
+function reset() {
+  document.getElementById('capture').style.display="block";
+  document.getElementById('submit').style.display="none";
+  document.getElementById('reset').style.display="none";
+  document.getElementById('snapshot').style.display="none";
+  document.getElementById('local_video').style.display="block";
+}
+
+function submit() {
+  var canvas = document.querySelector('canvas');
+  var base64 = canvas.toDataURL('image/png');
+  var bin = atob(base64.replace(/^.*,/, ''));
+  var buffer = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) {
+    buffer[i] = bin.charCodeAt(i);
+  }
+
+  $.ajax({
+    url: '/images/1/upload',
+    type: 'PUT',
+    contentType: 'application/octet-stream',
+    data: buffer.buffer,
+    processData: false,
+    success: function(response) {
+      let url = location.href;
+      location.href = url + "submit_pages/home";
+    }
+ });
+
+}
+
+//顔写真を受け取るまで送信画面を非表示にする
+document.getElementById('submit').style.display="none";
+document.getElementById('reset').style.display="none";
+document.getElementById('snapshot').style.display="none";
+
+startVideo();
+</script>

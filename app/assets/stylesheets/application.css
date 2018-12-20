@@ -13,3 +13,10 @@
  *= require_tree .
  *= require_self
  */
+#local_video {
+    /* 鏡 */
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+    -moz-transform: rotateY(180deg);
+    -ms-transform: rotateY(180deg);
+}
