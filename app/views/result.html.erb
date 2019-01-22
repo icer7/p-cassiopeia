@@ -25,7 +25,6 @@
 
 <a id="test-table"></a>
 <%= link_to "始めに戻る", "/", class: "ui secondary button" %>
-<%= link_to "正面撮影へ", "https://cassiopeia-prototype.herokuapp.com/", class: "ui primary button" %>
 <button class="ui green button" id="submit" onclick="submit()">計測結果確認</button>
 </table>
 
@@ -86,12 +85,16 @@
 
   function submit() {
     var result = String(abs((objX1 - objX2) * n).toFixed(1))
+    var value = "?" + "value=" + result
     $.ajax({
       url: '/measurement_result/home',
       type: 'GET',
       dataType: 'html',
       data: {
         value: result
+      },
+      success: function(response) {
+        location.href = "/measurement_result/home" + value;
       }
     });
   }

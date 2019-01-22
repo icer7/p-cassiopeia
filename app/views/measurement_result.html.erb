@@ -1,25 +1,22 @@
 <p id="notice"><%= notice %></p>
 <div class="ui message">
-測定結果は<%= @value %>cmです。おすすめの枕は↓↓↓
+  <% if @value.to_i >= 6 %>
+    測定結果は<%= @value %>cmです。オススメの枕タイプは高めです。
+  <% else %>
+    測定結果は<%= @value %>cmです。オススメの枕タイプは低めです。
+  <% end %>
 </div>
 
-<div>
-  <canvas style="background-color: white;" id="axisCanvas"></canvas>
-  <div class="ui grid">
-    <div class="two wide column">
-    </div>
-
-    <div class="four wide column">
-    </div>
-  </div>
+<div class="result">
 </div>
 
 <a id="test-table"></a>
 <%= link_to "始めに戻る", "/", class: "ui secondary button" %>
+<%= link_to "正面撮影へ", "https://cassiopeia-prototype.herokuapp.com/", class: "ui primary button" %>
 </table>
 
-<br>
-<%#
+<%# <br>
+
 <script>
   var getDevice = (function(){
     var ua = navigator.userAgent;
